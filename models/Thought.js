@@ -9,29 +9,30 @@ const thoughtSchema = new Schema(
       min: 1,
       max: [280, 'Too many characters!'],
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      //.toLocaleDateString()
-    },
     username: {
       type: String,
       required: true,
     },
     reactions: [reactionSchema],
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+      get: date => date.toLocaleString()
+    }
   },
   {
     toJSON: {
       virtuals: true,
+      getters: true,
     },
-    id: false, // what does this do?
+    id: false,
   }
 )
 
 thoughtSchema
   .virtual('reactionCount')
-  .get(function() {
-    return `${this.reactions.length}`
+  .get(function () {
+    return this.reactions.length
   });
 
 const Thought = model('thought', thoughtSchema);

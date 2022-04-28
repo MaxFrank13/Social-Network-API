@@ -17,15 +17,15 @@ const reactionSchema = new Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now,
-      //.toLocaleDateString()
-    },
+      default: Date.now(),
+      get: date => date.toLocaleString()
+    }
   },
   {
     toJSON: {
       getters: true,
     },
-    id: false, // what does this do?
+    id: false,
   }
 );
 

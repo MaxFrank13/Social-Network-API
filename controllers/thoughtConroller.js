@@ -106,7 +106,7 @@ module.exports = {
         _id: ObjectId(req.params.thoughtId) 
       },
       {
-        $pull: { reactions: ObjectId(req.params.reactionId) } 
+        $pull: { reactions: { reactionId: ObjectId(req.params.reactionId) } } 
       },
       { 
         runValidators: true, 
