@@ -11,12 +11,18 @@ module.exports = {
 
   getSingleUser(req, res) {
     User.findOne({ _id: ObjectId(req.params.userId) })
+      .select('-__v')
+      .populate({ path: 'thoughts', select: '-__v' })
+      .populate({ path: 'friends', select: '-__v' })
       .then(user => {
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
           : res.status(200).json(user)
       })
-      .catch(err => res.status(404).json(err));
+      .catch(err => {
+        console.log(err);
+        res.status(404);
+      });
   },
 
   createUser(req, res) {
@@ -50,12 +56,13 @@ module.exports = {
 
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: ObjectId(req.params.userId) })
-      .then(user =>
-        !user
-          ? res.status(404).json({ message: 'No such user exists' })
-          : Thought.deleteMany(
-            { username: { $in: user.username } },
-          )
+      .then(user => {
+        if (!user) {
+          res.status(404).json({ message: 'No such user exists' });
+        } else {
+          return Thought.deleteMany({ username: { $in: user.username } });
+        }
+      }
       )
       .then(() => res.status(200).json(
         { 
